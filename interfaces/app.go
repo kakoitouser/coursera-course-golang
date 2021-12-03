@@ -31,12 +31,14 @@ func (c *Card) Pay(price int) error {
 	c.Balance -= price
 	return nil
 }
+
 type ApplePay struct {
-	Money int
+	Money   int
 	AppleId string
 }
-func (a *ApplePay) Pay(price int) error{
-	if a.Money < price{
+
+func (a *ApplePay) Pay(price int) error {
+	if a.Money < price {
 		return fmt.Errorf("Не хватает денег")
 	}
 	a.Money -= price
@@ -44,14 +46,26 @@ func (a *ApplePay) Pay(price int) error{
 }
 
 func main() {
-	buy := func(p Payer){
+	buy := func(p Payer) {
 		err := p.Pay(10)
-		if err!=nil{
+		if err != nil {
 			fmt.Println("Ошибка при оплате")
 			return
 		}
 		fmt.Println("Покупка сделано")
 	}
 
-	buy(&Wallet{cash: 100})
+	w := &Wallet{cash: 100}
+	buy(w)
+
+	func(p Payer) {
+		switch p.(type) {
+		case *Wallet:
+			fmt.Println("Оплата наличными")
+		case *Card:
+			fmt.Println("Оплата картой")
+		case *ApplePay:
+			fmt.Println("Оплата с эпл пэй")
+		}
+	}(w)
 }
